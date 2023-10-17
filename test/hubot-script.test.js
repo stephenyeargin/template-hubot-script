@@ -56,4 +56,17 @@ describe('hubot-script', () => {
       ['hubot', 'POST: Status updated!'],
     ]));
   });
+
+  // Return a plaintext message when not using Slack adapter
+  context('ask hubot to return a plain text message', () => {
+    beforeEach((done) => {
+      room.user.say('alice', 'hubot slack test');
+      setTimeout(done, 100);
+    });
+
+    it('hubot responds with plain text message', () => expect(room.messages).to.eql([
+      ['alice', 'hubot slack test'],
+      ['hubot', 'This message is not formatted for Slack.'],
+    ]));
+  });
 });
