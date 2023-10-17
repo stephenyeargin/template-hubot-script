@@ -59,7 +59,7 @@ module.exports = (robot) => {
   });
 
   // Example: Calls an API with a POST request
-  return robot.respond(/hello:post (.*)/i, (msg) => {
+  robot.respond(/hello:post (.*)/i, (msg) => {
     robot.logger.info('Calling hello:post');
     const payload = msg.match[1];
 
@@ -77,5 +77,21 @@ module.exports = (robot) => {
         robot.logger.error(parseError);
       }
     });
+  });
+
+  robot.respond(/slack test/i, (msg) => {
+    if (/slack/.test(robot.adapterName)) {
+      msg.send({
+        attachments: [
+          {
+            title: 'Slack Test',
+            text: 'This message is formatted for Slack.',
+            color: '#36a64f',
+          },
+        ],
+      });
+      return;
+    }
+    msg.send('This message is not formatted for Slack.');
   });
 };
