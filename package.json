@@ -17,7 +17,7 @@
     "url": "https://github.com/stephenyeargin/template-hubot-script/issues"
   },
   "peerDependencies": {
-    "hubot": ">=2"
+    "hubot": ">=3"
   },
   "devDependencies": {
     "chai": "^4.3.10",
@@ -37,11 +37,10 @@
   "main": "index.js",
   "scripts": {
     "release": "release-it",
-    "test": "mocha \"test/**/*.js\" --reporter spec",
+    "test": "script/test",
     "prepare": "husky install"
   },
   "volta": {
-    "node": "16.20.0",
-    "npm": "8.19.4"
+    "node": "18.19.0"
   }
 }
