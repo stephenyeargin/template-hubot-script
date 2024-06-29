@@ -1,5 +1,3 @@
-/* global describe, expect, it, beforeEach, afterEach */
-
 const Helper = require('hubot-test-helper');
 const nock = require('nock');
 
@@ -21,7 +19,7 @@ describe('hubot-script slack', () => {
     nock.cleanAll();
   });
 
-  // Return a Slack formatted message when using adapter
+  // Example: Return a Slack formatted message when using adapter
   describe('ask hubot to return a Slack message', () => {
     beforeEach((done) => {
       room.user.say('alice', 'hubot slack test');

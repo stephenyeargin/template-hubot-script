@@ -1,5 +1,3 @@
-/* global describe, expect, it, beforeEach, afterEach */
-
 const Helper = require('hubot-test-helper');
 const nock = require('nock');
 
