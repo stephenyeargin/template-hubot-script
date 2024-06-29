@@ -1,12 +1,7 @@
-/* global describe, context it, beforeEach, afterEach */
-
 const Helper = require('hubot-test-helper');
-const chai = require('chai');
-chai.use(require('sinon-chai'));
 const nock = require('nock');
 
 const helper = new Helper('./../src/hubot-script.js');
-const { expect } = chai;
 
 describe('hubot-script', () => {
   let room = null;
@@ -24,7 +19,7 @@ describe('hubot-script', () => {
   });
 
   // Example: Returning data through an API
-  context('ask hubot to get a message', () => {
+  describe('ask hubot to get a message', () => {
     beforeEach((done) => {
       nock('https://api.example.com')
         .matchHeader('x-api-key', 'abcdef')
@@ -34,14 +29,14 @@ describe('hubot-script', () => {
       setTimeout(done, 100);
     });
 
-    it('hubot responds with message', () => expect(room.messages).to.eql([
+    it('hubot responds with message', () => expect(room.messages).toEqual([
       ['alice', 'hubot hello:get'],
       ['hubot', 'GET: Hello world!'],
     ]));
   });
 
   // Example: Sending data through an API
-  context('ask hubot to post a message', () => {
+  describe('ask hubot to post a message', () => {
     beforeEach((done) => {
       nock('https://api.example.com')
         .matchHeader('x-api-key', 'abcdef')
@@ -51,22 +46,25 @@ describe('hubot-script', () => {
       setTimeout(done, 100);
     });
 
-    it('hubot responds with message', () => expect(room.messages).to.eql([
+    it('hubot responds with message', () => expect(room.messages).toEqual([
       ['alice', 'hubot hello:post Hello world!'],
       ['hubot', 'POST: Status updated!'],
     ]));
   });
 
   // Return a plaintext message when not using Slack adapter
-  context('ask hubot to return a plain text message', () => {
+  describe('ask hubot to return a plain text message', () => {
     beforeEach((done) => {
       room.user.say('alice', 'hubot slack test');
       setTimeout(done, 100);
     });
 
-    it('hubot responds with plain text message', () => expect(room.messages).to.eql([
-      ['alice', 'hubot slack test'],
-      ['hubot', 'This message is not formatted for Slack.'],
-    ]));
+    it(
+      'hubot responds with plain text message',
+      () => expect(room.messages).toEqual([
+        ['alice', 'hubot slack test'],
+        ['hubot', 'This message is not formatted for Slack.'],
+      ]),
+    );
   });
 });

@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> Be sure to update this README!
+
 # template-hubot-script
 
 Template repository for creating a new Hubot script package.

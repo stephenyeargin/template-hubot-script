@@ -79,6 +79,7 @@ module.exports = (robot) => {
     });
   });
 
+  // Example: Alter the appearance based on the adapter in use
   robot.respond(/slack test/i, (msg) => {
     if (/slack/.test(robot.adapterName)) {
       msg.send({
