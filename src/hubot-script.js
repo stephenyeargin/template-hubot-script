@@ -40,12 +40,12 @@ module.exports = (robot) => {
 
   // Example: Calls an API with a GET request
   robot.respond(/hello:get$/i, (msg) => {
-    robot.logger.info('Calling hello:get');
+    robot.logger.debug('Calling hello:get');
 
     return makeAPIRequest('GET', 'v1/status.json', {}, (err, _res, body) => {
       if (err) {
         robot.logger.error(err);
-        msg.send(`Error: ${err}`);
+        msg.send(err);
         return;
       }
 
@@ -60,13 +60,13 @@ module.exports = (robot) => {
 
   // Example: Calls an API with a POST request
   robot.respond(/hello:post (.*)/i, (msg) => {
-    robot.logger.info('Calling hello:post');
+    robot.logger.debug('Calling hello:post');
     const payload = msg.match[1];
 
     return makeAPIRequest('POST', 'v1/status', { payload }, (err, _res, body) => {
       if (err) {
         robot.logger.error(err);
-        msg.send(`Error: ${err}`);
+        msg.send(err.toString());
         return;
       }
 

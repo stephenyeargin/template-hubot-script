@@ -12,6 +12,11 @@ describe('hubot-script slack', () => {
   beforeEach(() => {
     room = helper.createRoom();
     nock.disableNetConnect();
+
+    // Mock robot.logger methods
+    ['debug', 'info', 'warning', 'error'].forEach((method) => {
+      room.robot.logger[method] = jest.fn();
+    });
   });
 
   afterEach(() => {
