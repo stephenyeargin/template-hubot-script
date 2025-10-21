@@ -10,6 +10,11 @@ describe('hubot-script', () => {
     process.env.HUBOT_EXAMPLE_API_KEY = 'abcdef';
     room = helper.createRoom();
     nock.disableNetConnect();
+
+    // Mock robot.logger methods
+    ['debug', 'info', 'warning', 'error'].forEach((method) => {
+      room.robot.logger[method] = jest.fn();
+    });
   });
 
   afterEach(() => {
@@ -33,6 +38,10 @@ describe('hubot-script', () => {
       ['alice', 'hubot hello:get'],
       ['hubot', 'GET: Hello world!'],
     ]));
+
+    it('logs debug message', () => {
+      expect(room.robot.logger.debug).toHaveBeenCalledWith('Calling hello:get');
+    });
   });
 
   // Example: Sending data through an API
@@ -50,6 +59,31 @@ describe('hubot-script', () => {
       ['alice', 'hubot hello:post Hello world!'],
       ['hubot', 'POST: Status updated!'],
     ]));
+
+    it('logs debug message', () => {
+      expect(room.robot.logger.debug).toHaveBeenCalledWith('Calling hello:post');
+    });
+  });
+
+  // Example: Handle an error
+  describe('ask hubot to post a message, get an error', () => {
+    beforeEach((done) => {
+      nock('https://api.example.com')
+        .matchHeader('x-api-key', 'abcdef')
+        .post('/v1/status', { payload: 'Hello world!' })
+        .replyWithError('An unexpected error has occurred!');
+      room.user.say('alice', 'hubot hello:post Hello world!');
+      setTimeout(done, 100);
+    });
+
+    it('hubot responds with message', () => expect(room.messages).toEqual([
+      ['alice', 'hubot hello:post Hello world!'],
+      ['hubot', 'Error: An unexpected error has occurred!'],
+    ]));
+
+    it('logs error message', () => {
+      expect(room.robot.logger.error).toHaveBeenCalled();
+    });
   });
 
   // Return a plaintext message when not using Slack adapter

@@ -1,4 +1,6 @@
-// Mock Slack adapter
+// Description:
+//    Mock Slack adapter
+
 module.exports = (robot) => {
   robot.adapterName = 'slack';
 };
