@@ -16,6 +16,9 @@
   "bugs": {
     "url": "https://github.com/stephenyeargin/template-hubot-script/issues"
   },
+  "files": [
+    "src/**/*.js"
+  ],
   "peerDependencies": {
     "hubot": ">=3 || 0.0.0-development"
   },
