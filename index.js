@@ -1,6 +1,2 @@
-const path = require('path');
+module.exports = require('./src/hubot-script.js');
 
-module.exports = (robot) => {
-  const scriptsPath = path.resolve(__dirname, 'src');
-  robot.loadFile(scriptsPath, 'hubot-script.js');
-};

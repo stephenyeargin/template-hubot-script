@@ -1,0 +1,60 @@
+on:
+  push:
+    branches:
+      - main
+
+name: npm-publish
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    # To enable publishing, either:
+    #   a) Set a repository variable named NPM_PUBLISH_ENABLED to 'true'
+    #      (Settings → Secrets and variables → Actions → Variables)
+    #   b) Delete the `if` condition below to always publish on push to main
+    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          registry-url: https://registry.npmjs.org
+
+      - name: Update npm to latest version
+        run: npm install -g npm@latest
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Publish to npm
+        id: publish
+        run: |
+          # Verify npm version supports OIDC
+          echo "npm version: $(npm --version)"
+
+          # Check if version is already published
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
+            echo "Version $PACKAGE_VERSION already published"
+            echo "type=" >> $GITHUB_OUTPUT
+          else
+            echo "Publishing $PACKAGE_NAME@$PACKAGE_VERSION..."
+            npm publish --access public
+            echo "type=patch" >> $GITHUB_OUTPUT
+            echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - if: ${{ steps.publish.outputs.type }}
+        name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="v${{ steps.publish.outputs.version }}"
+          gh release create $VERSION --generate-notes

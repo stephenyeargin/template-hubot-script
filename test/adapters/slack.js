@@ -2,5 +2,5 @@
 //    Mock Slack adapter
 
 module.exports = (robot) => {
-  robot.adapterName = 'slack';
+  robot.adapterName = '@hubot-friends/hubot-slack';
 };

@@ -1,21 +1,21 @@
-const Helper = require('hubot-test-helper');
+const Helper = require('./helpers/hubot-helper');
 const nock = require('nock');
 
 const helper = new Helper([
-  './../test/adapters/slack.js',
-  './../src/hubot-script.js',
+  './test/adapters/slack.js',
+  './src/hubot-script.js',
 ]);
 
 describe('hubot-script slack', () => {
   let room = null;
 
-  beforeEach(() => {
-    room = helper.createRoom();
+  beforeEach(async () => {
+    room = await helper.createRoom();
     nock.disableNetConnect();
 
     // Mock robot.logger methods
     ['debug', 'info', 'warning', 'error'].forEach((method) => {
-      room.robot.logger[method] = jest.fn();
+      room.robot.logger[method] = vi.fn();
     });
   });
 
@@ -26,9 +26,8 @@ describe('hubot-script slack', () => {
 
   // Example: Return a Slack formatted message when using adapter
   describe('ask hubot to return a Slack message', () => {
-    beforeEach((done) => {
-      room.user.say('alice', 'hubot slack test');
-      setTimeout(done, 100);
+    beforeEach(async () => {
+      await room.user.say('alice', 'hubot slack test');
     });
 
     it('hubot responds with message', () => expect(room.messages).toEqual([

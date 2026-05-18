@@ -11,77 +11,82 @@
 
 module.exports = (robot) => {
   // Example: Centralized request handler
-  const makeAPIRequest = (method, path, payload, callback) => {
-    if (method.toUpperCase() === 'GET') {
-      return robot.http(`https://api.example.com/${path}`)
-        .headers({
-          'x-api-key': process.env.HUBOT_EXAMPLE_API_KEY,
-        })
-        .query(payload)
-        .get()((err, res, body) => {
-          callback(err, res, body);
-        });
-    }
-
-    if (method.toUpperCase() === 'POST') {
-      const data = JSON.stringify(payload);
-      return robot.http(`https://api.example.com/${path}`)
-        .headers({
-          'x-api-key': process.env.HUBOT_EXAMPLE_API_KEY,
-        })
-        .post(data)((err, res, body) => {
-          callback(err, res, body);
-        });
-    }
-
-    robot.logger.error(`Invalid method: ${method}`);
-    return callback('Invalid method!');
-  };
-
-  // Example: Calls an API with a GET request
-  robot.respond(/hello:get$/i, (msg) => {
-    robot.logger.debug('Calling hello:get');
-
-    return makeAPIRequest('GET', 'v1/status.json', {}, (err, _res, body) => {
-      if (err) {
-        robot.logger.error(err);
-        msg.send(err);
+  const makeAPIRequest = (method, path, payload) => {
+    return new Promise((resolve, reject) => {
+      if (method.toUpperCase() === 'GET') {
+        robot.http(`https://api.example.com/${path}`)
+          .headers({
+            'x-api-key': process.env.HUBOT_EXAMPLE_API_KEY,
+          })
+          .query(payload)
+          .get()((err, res, body) => {
+            if (err) return reject(err);
+            resolve({ res, body });
+          });
         return;
       }
 
-      try {
-        const apiResponse = JSON.parse(body);
-        msg.send(`GET: ${apiResponse.message}`);
-      } catch (parseError) {
-        robot.logger.error(parseError);
+      if (method.toUpperCase() === 'POST') {
+        const data = JSON.stringify(payload);
+        robot.http(`https://api.example.com/${path}`)
+          .headers({
+            'x-api-key': process.env.HUBOT_EXAMPLE_API_KEY,
+          })
+          .post(data)((err, res, body) => {
+            if (err) return reject(err);
+            resolve({ res, body });
+          });
+        return;
       }
+
+      reject(new Error(`Invalid method: ${method}`));
     });
+  };
+
+  // Centralized adapter detection - returns adapter type for format handling
+  // Extensible to support multiple custom response formats in the future
+  function getAdapterType() {
+    const adapterName = robot?.adapterName ?? robot?.adapter?.name;
+
+    if (/slack/i.test(adapterName)) {
+      return 'slack';
+    }
+
+    return 'default';
+  }
+
+  // Example: Calls an API with a GET request
+  robot.respond(/hello:get$/i, async (msg) => {
+    robot.logger.debug('Calling hello:get');
+
+    try {
+      const { body } = await makeAPIRequest('GET', 'v1/status.json', {});
+      const apiResponse = JSON.parse(body);
+      msg.send(`GET: ${apiResponse.message}`);
+    } catch (err) {
+      robot.logger.error(err);
+      msg.send(err.toString());
+    }
   });
 
   // Example: Calls an API with a POST request
-  robot.respond(/hello:post (.*)/i, (msg) => {
+  robot.respond(/hello:post (.*)/i, async (msg) => {
     robot.logger.debug('Calling hello:post');
     const payload = msg.match[1];
 
-    return makeAPIRequest('POST', 'v1/status', { payload }, (err, _res, body) => {
-      if (err) {
-        robot.logger.error(err);
-        msg.send(err.toString());
-        return;
-      }
-
-      try {
-        const apiResponse = JSON.parse(body);
-        msg.send(`POST: ${apiResponse.status}`);
-      } catch (parseError) {
-        robot.logger.error(parseError);
-      }
-    });
+    try {
+      const { body } = await makeAPIRequest('POST', 'v1/status', { payload });
+      const apiResponse = JSON.parse(body);
+      msg.send(`POST: ${apiResponse.status}`);
+    } catch (err) {
+      robot.logger.error(err);
+      msg.send(err.toString());
+    }
   });
 
   // Example: Alter the appearance based on the adapter in use
   robot.respond(/slack test/i, (msg) => {
-    if (/slack/.test(robot.adapterName)) {
+    if (getAdapterType() == 'slack') {
       msg.send({
         attachments: [
           {
