@@ -35,10 +35,11 @@
   "scripts": {
     "test": "script/test",
     "prepare": "husky",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lockfile:refresh": "npm install --package-lock-only --ignore-scripts"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "peerDependencies": {
     "hubot": ">=14"
