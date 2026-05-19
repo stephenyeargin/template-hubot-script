@@ -36,18 +36,15 @@
     "test": "script/test",
     "prepare": "husky",
     "lint": "eslint .",
-    "lockfile:refresh": "npx -y npm@11.12.1 install --package-lock-only --ignore-scripts"
+    "lockfile:refresh": "npm install --package-lock-only --ignore-scripts"
   },
   "engines": {
-    "node": ">=22",
-    "npm": ">=11 <12"
+    "node": ">=22"
   },
-  "packageManager": "npm@11.12.1",
   "peerDependencies": {
     "hubot": ">=14"
   },
   "volta": {
-    "node": "24.10.0",
-    "npm": "11.12.1"
+    "node": "22.22.3"
   }
 }
