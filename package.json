@@ -20,7 +20,7 @@
     "src/**/*.js"
   ],
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^10.4.0",
     "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-n": "^18.0.1",
