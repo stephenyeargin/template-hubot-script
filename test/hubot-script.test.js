@@ -1,5 +1,5 @@
 const Helper = require('./helpers/hubot-helper');
-const nock = require('nock');
+const { default: nock } = require('nock');
 
 const helper = new Helper('./src/hubot-script.js');
 
